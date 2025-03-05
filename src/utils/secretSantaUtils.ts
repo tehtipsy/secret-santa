@@ -1,7 +1,7 @@
 import { Participant, Pairing } from '../models/types';
 
 // Shuffle array using Fisher-Yates algorithm
-export const shuffleArray = <T> (array: T[]): T[] => {
+const shuffleArray = <T> (array: T[]): T[] => {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -54,26 +54,13 @@ export const generateSecretSantaPairings = (participants: Participant[]): Pairin
   return null;
 };
 
-// Create a unique ID
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 11);
 };
 
 // Encode pairings to a URL-safe format
 export const encodePairings = (pairings: Pairing[]): string => {
-  const simplified = pairings.map(pair => ({
-    giver: {
-      id: pair.giver.id,
-      name: pair.giver.name,
-      email: pair.giver.email || ''
-    },
-    receiver: {
-      id: pair.receiver.id,
-      name: pair.receiver.name,
-      email: pair.receiver.email || ''
-    }
-  }));
-
+  const simplified = pairings.map(pair => ([ pair.giver.name, pair.receiver.name ]));
   return btoa(encodeURIComponent(JSON.stringify(simplified)));
 };
 
@@ -81,7 +68,24 @@ export const encodePairings = (pairings: Pairing[]): string => {
 export const decodePairings = (encoded: string): Pairing[] | null => {
   try {
     const json = decodeURIComponent(atob(encoded));
-    return JSON.parse(json);
+    const decodedPairings = JSON.parse(json);
+    if (decodedPairings) {
+      const decodedPairingsArray = Array.isArray(decodedPairings)
+        ? decodedPairings
+        : [decodedPairings];
+      const newPairings = decodedPairingsArray.map((pairing) => ({
+        giver: {
+          id: generateId(),
+          name: pairing[0]
+        },
+        receiver: {
+          id: generateId(),
+          name: pairing[1]
+        }
+      }));
+      return newPairings;
+    }
+    return null;
   } catch (error) {
     console.error('Failed to decode pairings:', error);
     return null;
