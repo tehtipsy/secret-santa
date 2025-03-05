@@ -58,3 +58,32 @@ export const generateSecretSantaPairings = (participants: Participant[]): Pairin
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 11);
 };
+
+// Encode pairings to a URL-safe format
+export const encodePairings = (pairings: Pairing[]): string => {
+  const simplified = pairings.map(pair => ({
+    giver: {
+      id: pair.giver.id,
+      name: pair.giver.name,
+      email: pair.giver.email || ''
+    },
+    receiver: {
+      id: pair.receiver.id,
+      name: pair.receiver.name,
+      email: pair.receiver.email || ''
+    }
+  }));
+
+  return btoa(encodeURIComponent(JSON.stringify(simplified)));
+};
+
+// Decode pairings from a URL-safe format
+export const decodePairings = (encoded: string): Pairing[] | null => {
+  try {
+    const json = decodeURIComponent(atob(encoded));
+    return JSON.parse(json);
+  } catch (error) {
+    console.error('Failed to decode pairings:', error);
+    return null;
+  }
+};

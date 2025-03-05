@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/App.css';
 import Header from './components/Header';
 import ParticipantsList from './components/ParticipantsList';
 import ViewPairings from './components/ViewPairings';
+import SharedPairings from './components/SharedPairings';
 import { Participant, Pairing } from './models/types';
 import { generateSecretSantaPairings } from './utils/secretSantaUtils';
-import React from 'react';
 
-function App() {
+function SecretSantaApp () {
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [pairings, setPairings] = useState<Pairing[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +84,17 @@ function App() {
         />
       )}
     </div>
+  );
+}
+
+function App () {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<SecretSantaApp />} />
+        <Route path="/shared/:encodedData" element={<SharedPairings />} />
+      </Routes>
+    </Router>
   );
 }
 

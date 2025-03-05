@@ -1,7 +1,8 @@
 export interface Participant {
   id: string;
   name: string;
-  exclusions?: string[]; // IDs of participants that this person cannot be paired with
+  email?: string;
+  exclusions?: string[];
 }
 
 export interface Pairing {
