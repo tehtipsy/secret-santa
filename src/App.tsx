@@ -14,10 +14,22 @@ function SecretSantaApp () {
   const [error, setError] = useState<string | null>(null);
 
   const handleAddParticipant = (participant: Participant) => {
-    setParticipants([...participants, participant]);
-    // Clear pairings when participants change
-    setPairings(null);
-    setError(null);
+    // Check if a participant with this name already exists (case-insensitive)
+    const nameExists = participants.some(
+      p => p.name.toLowerCase() === participant.name.toLowerCase()
+    );
+
+    if (!nameExists) {
+      setParticipants(prevParticipants => [...prevParticipants, participant]);
+      // Clear pairings when participants change
+      setPairings(null);
+      setError(null);
+    } else {
+      // Error message that this name already exists
+      setError(`A participant named "${participant.name}" already exists`);
+      // Clear the error after a few seconds
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
   const handleRemoveParticipant = (id: string) => {

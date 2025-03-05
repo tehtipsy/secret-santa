@@ -15,17 +15,27 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
   onRemoveParticipant,
   onUpdateExclusions,
 }) => {
-  const [newName, setNewName] = useState('');
+  const [newNames, setNewNames] = useState('');
   const [showExclusions, setShowExclusions] = useState<string | null>(null);
 
   const handleAddParticipant = () => {
-    if (newName.trim()) {
-      onAddParticipant({
-        id: generateId(),
-        name: newName.trim(),
-        exclusions: [],
-      });
-      setNewName('');
+    if (newNames.trim()) {
+      const names = newNames
+        .split('\n')
+        .map(name => name.trim())
+        .filter(name => name !== '');
+
+      // Add each participant one by one to ensure they all get added
+      for (const name of names) {
+        const newParticipant = {
+          id: generateId(),
+          name,
+          exclusions: [],
+        };
+        onAddParticipant(newParticipant);
+      }
+
+      setNewNames('');
     }
   };
 
@@ -50,14 +60,20 @@ const ParticipantsList: React.FC<ParticipantsListProps> = ({
       <h2>Participants</h2>
       
       <div className="participant-item">
-        <input
-          type="text"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          placeholder="Enter participant name"
-          onKeyDown={(e) => e.key === 'Enter' && handleAddParticipant()}
+        <textarea
+          value={newNames}
+          onChange={(e) => setNewNames(e.target.value)}
+          placeholder="Enter participant names (one per line)"
+          rows={4}
+          style={{ width: '100%', marginBottom: '10px' }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+              e.preventDefault();
+              handleAddParticipant();
+            }
+          }}
         />
-        <button onClick={handleAddParticipant}>Add</button>
+        <button onClick={handleAddParticipant}>Add Participants</button>
       </div>
       
       {participants.length > 0 ? (
