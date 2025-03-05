@@ -58,35 +58,42 @@ export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 11);
 };
 
-// Encode pairings to a URL-safe format
-export const encodePairings = (pairings: Pairing[]): string => {
-  const pairs = pairings.map(pair => [pair.giver.name, pair.receiver.name]);
-  const minifiedJson = JSON.stringify(pairs);
-  
+const encodeUrl = (url: string): string => {
   // Handle Unicode characters by encoding to UTF-8 first
-  const encoded = encodeURIComponent(minifiedJson)
+  const encoded = encodeURIComponent(url)
     .replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16)));
-  
+
   return btoa(encoded)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 };
 
+const decodeUrl = (encoded: string): string => {
+  const padding = '='.repeat((4 - encoded.length % 4) % 4);
+  const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/') + padding;
+
+  // Decode base64 and handle Unicode characters
+  const binaryString = atob(base64);
+  const utf8String = binaryString
+    .split('')
+    .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+    .join('');
+
+  return decodeURIComponent(utf8String);
+}
+
+// Encode pairings to a URL-safe format
+export const encodePairings = (pairings: Pairing[]): string => {
+  const pairs = pairings.map(pair => [pair.giver.name, pair.receiver.name]);
+  const minifiedJson = JSON.stringify(pairs);
+  return encodeUrl(minifiedJson);
+};
+
 // Decode pairings from a URL-safe format
 export const decodePairings = (encoded: string): Pairing[] | null => {
   try {
-    const padding = '='.repeat((4 - encoded.length % 4) % 4);
-    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/') + padding;
-    
-    // Decode base64 and handle Unicode characters
-    const binaryString = atob(base64);
-    const utf8String = binaryString
-      .split('')
-      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('');
-    
-    const json = decodeURIComponent(utf8String);
+    const json = decodeUrl(encoded);
     if (!json) return null;
 
     const decodedPairings = JSON.parse(json);
