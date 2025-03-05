@@ -60,14 +60,35 @@ export const generateId = (): string => {
 
 // Encode pairings to a URL-safe format
 export const encodePairings = (pairings: Pairing[]): string => {
-  const simplified = pairings.map(pair => ([ pair.giver.name, pair.receiver.name ]));
-  return btoa(encodeURIComponent(JSON.stringify(simplified)));
+  const pairs = pairings.map(pair => [pair.giver.name, pair.receiver.name]);
+  const minifiedJson = JSON.stringify(pairs);
+  
+  // Handle Unicode characters by encoding to UTF-8 first
+  const encoded = encodeURIComponent(minifiedJson)
+    .replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode(parseInt(p1, 16)));
+  
+  return btoa(encoded)
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 };
 
 // Decode pairings from a URL-safe format
 export const decodePairings = (encoded: string): Pairing[] | null => {
   try {
-    const json = decodeURIComponent(atob(encoded));
+    const padding = '='.repeat((4 - encoded.length % 4) % 4);
+    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/') + padding;
+    
+    // Decode base64 and handle Unicode characters
+    const binaryString = atob(base64);
+    const utf8String = binaryString
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('');
+    
+    const json = decodeURIComponent(utf8String);
+    if (!json) return null;
+
     const decodedPairings = JSON.parse(json);
     if (decodedPairings) {
       const decodedPairingsArray = Array.isArray(decodedPairings)
