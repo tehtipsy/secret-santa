@@ -57,8 +57,14 @@ function SecretSantaApp () {
   };
 
   const handleGeneratePairings = () => {
+    if (participants.length < 2) {
+      setError("You need at least 2 participants to generate pairings.");
+      setPairings(null);
+      return;
+    }
+
     const newPairings = generateSecretSantaPairings(participants);
-    
+
     if (newPairings) {
       setPairings(newPairings);
       setError(null);
