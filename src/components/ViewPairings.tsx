@@ -13,11 +13,13 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
   onRegeneratePairings,
   readonly = false
 }) => {
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedLink, setCopiedLink] = useState<number | null>(null);
   const [selectedPairingIndex, setSelectedPairingIndex] = useState<number | null>(null);
 
-  const handleShareLink = () => {
-    const encoded = encodePairings(pairings);
+  const handleShareLink = (index: number) => {
+    // Share a single pairing
+    const pairingToShare = [pairings[index]];
+    const encoded = encodePairings(pairingToShare);
 
     // More robust URL construction for GitHub Pages
     const origin = window.location.origin;
@@ -28,8 +30,8 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
 
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 2000);
+        setCopiedLink(index);
+        setTimeout(() => setCopiedLink(null), 2000);
       })
       .catch(err => {
         console.error('Could not copy text: ', err);
@@ -44,16 +46,11 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
     <div className="pairings-container">
       <h2>Secret Santa Pairings</h2>
       
-      {!readonly && (
+      {!readonly && onRegeneratePairings && (
         <div className="actions">
-          <button onClick={handleShareLink}>
-            {copiedLink ? "Link Copied!" : "Share These Pairings"}
+          <button onClick={onRegeneratePairings}>
+            Regenerate Pairings
           </button>
-          {onRegeneratePairings && (
-            <button onClick={onRegeneratePairings}>
-              Regenerate Pairings
-            </button>
-          )}
         </div>
       )}
 
@@ -62,16 +59,24 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
           <div
             key={pairing.giver.id}
             className="pairing-card"
-            onClick={() => togglePairing(index)}
           >
-            <div className="giver">{pairing.giver.name}</div>
-            <div className="arrow">→</div>
-            <div className="receiver">
-              {selectedPairingIndex === index
-                ? pairing.receiver.name
-                : "Click to reveal"
-              }
+            <div className="pairing-info" onClick={() => togglePairing(index)}>
+              <div className="giver">{pairing.giver.name}</div>
+              <div className="arrow">→</div>
+              <div className="receiver">
+                {selectedPairingIndex === index
+                  ? pairing.receiver.name
+                  : "Click to reveal"
+                }
+              </div>
             </div>
+            {!readonly && (
+              <div className="pairing-actions">
+                <button onClick={() => handleShareLink(index)}>
+                  {copiedLink === index ? "Link Copied!" : "Share This Pairing"}
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
