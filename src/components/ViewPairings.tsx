@@ -18,7 +18,7 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
 
   const handleShareLink = () => {
     const encoded = encodePairings(pairings);
-    const shareUrl = `${window.location.origin}/shared/${encoded}`;
+    const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}#/shared/${encoded}`;
 
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
