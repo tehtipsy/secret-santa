@@ -18,7 +18,13 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
 
   const handleShareLink = () => {
     const encoded = encodePairings(pairings);
-    const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}#/shared/${encoded}`;
+
+    // More robust URL construction for GitHub Pages
+    const origin = window.location.origin;
+    const pathname = window.location.pathname.replace(/\/index\.html$/, '');
+
+    // For GitHub Pages with HashRouter, this is more reliable
+    const shareUrl = `${origin}${pathname}#/shared/${encoded}`;
 
     navigator.clipboard.writeText(shareUrl)
       .then(() => {
