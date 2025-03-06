@@ -60,6 +60,14 @@ button:disabled {
   background-color: #444;
 }
 
+.button-reveal {
+  background-color: #440843;
+}
+
+.button-reveal:hover {
+  background-color: #7a1578;
+}
+
 .pairing-card {
   border: 1px solid #ccc;
   padding: 1rem;
@@ -67,10 +75,31 @@ button:disabled {
   border-radius: 4px;
   text-align: left;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+}
+
+.pairing-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .error-message {
   color: #d42426;
   margin: 1rem 0;
+}
+
+.shared-pairings {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/public/purim.jpg');
+  background-size: cover;
+  background-position: top;
+  text-shadow: #440843 2px 2px 2px;
 }

@@ -44,8 +44,6 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
 
   return (
     <div className="pairings-container">
-      <h2>Secret Santa Pairings</h2>
-      
       {!readonly && onRegeneratePairings && (
         <div className="actions">
           <button onClick={onRegeneratePairings}>
@@ -53,6 +51,9 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
           </button>
         </div>
       )}
+      
+      {!readonly && <h2>Secret Santa Pairings</h2>}
+      {readonly && <h2>גלו מי יקבל את משלוח המנות שלכם</h2>}
 
       <div className="pairings-list">
         {pairings.map((pairing, index) => (
@@ -62,11 +63,11 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
           >
             <div className="pairing-info" onClick={() => togglePairing(index)}>
               <div className="giver">{pairing.giver.name}</div>
-              <div className="arrow">→</div>
+              <div className="arrow">↓</div>
               <div className="receiver">
                 {selectedPairingIndex === index
                   ? pairing.receiver.name
-                  : "Click to reveal"
+                  : <button className="button-reveal">לחצו כדי לגלות</button>
                 }
               </div>
             </div>

@@ -39,10 +39,15 @@ const SharedPairings: React.FC = () => {
 
   return (
     <div className="shared-pairings">
-      <h2>Secret Santa Pairings</h2>
-      <p>These pairings were shared with you!</p>
+      <h2>משלוח מנות פורים משפחתי 2025</h2>
+      <h3>חיכינו לזה שנה שלמה 🥳</h3>
+
+      <p>לחצו על הכפתור כדי לחשוף מי יקבל את משלוח המנות המושקע שלכם</p>
+      <p>שימו לב - המשלוח יכול להכיל מכל טוב ולא רק מאכלים</p>
+      <p>הכינו משלוח בתקציב עד 50₪</p>
+      <h3>והשנה הקונספט… עתידני ! 👽👾🛸🤖🔫🪐☄️🔭🚀</h3>
       <ViewPairings pairings={pairings} readonly />
-      <Link to="/">Create your own Secret Santa</Link>
+      <Link to="/">לחצו כאן כדי ליצור הגרלת זוגות חדשה</Link>
     </div>
   );
 };
