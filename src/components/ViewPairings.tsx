@@ -57,6 +57,7 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
 
       <div className="pairings-list">
         {pairings.map((pairing, index) => (
+          <>
           <div
             key={pairing.giver.id}
             className="pairing-card"
@@ -72,6 +73,8 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
                 }</button>
               </div>
             </div>
+
+            </div>
             {!readonly && (
               <div className="pairing-actions">
                 <button onClick={() => handleShareLink(index)}>
@@ -79,7 +82,8 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
                 </button>
               </div>
             )}
-          </div>
+          </>
+          
         ))}
       </div>
     </div>
