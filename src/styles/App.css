@@ -98,8 +98,9 @@ button:disabled {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url('/public/purim.jpg');
+  background-image: url('/purim.jpg');
   background-size: cover;
   background-position: top;
   text-shadow: #440843 2px 2px 2px;
+  -webkit-text-fill-color: #ccc;
 }
