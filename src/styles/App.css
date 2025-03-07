@@ -109,3 +109,18 @@ button:disabled {
   box-sizing: border-box;
   min-height: 100vh;
 }
+
+/* Add mobile-specific adjustments */
+@media (max-width: 768px) {
+  .shared-pairings {
+    padding: 1.5rem 1rem;
+  }
+
+  .shared-pairings h2,
+  .shared-pairings h3 {
+    width: 100%;
+    /* Full width for headings */
+    word-wrap: break-word;
+    /* Prevent text overflow */
+  }
+}
