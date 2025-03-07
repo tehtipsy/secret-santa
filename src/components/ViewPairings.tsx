@@ -65,10 +65,11 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
               <div className="giver">{pairing.giver.name}</div>
               <div className="arrow">↓</div>
               <div className="receiver">
-                {selectedPairingIndex === index
+                <button className="button-reveal">{
+                  selectedPairingIndex === index
                   ? pairing.receiver.name
-                  : <button className="button-reveal">לחצו כדי לגלות</button>
-                }
+                  : "לחצו כדי לגלות"
+                }</button>
               </div>
             </div>
             {!readonly && (
