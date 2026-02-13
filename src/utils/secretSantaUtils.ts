@@ -147,10 +147,25 @@ const sanitizeCSVField = (field: string): string => {
 
 // Export pairings to CSV (without revealing who gives to whom)
 export const exportPairingsToCSV = (pairings: Pairing[]): void => {
-  // Create CSV content with just the receiver names to maintain secrecy
+  // Create CSV content with receiver names and shareable links
   // We don't include giver information to keep the secret santa anonymous
-  const headers = ['Recipient'];
-  const rows = pairings.map(pairing => [sanitizeCSVField(pairing.receiver.name)]);
+  const headers = ['Recipient', 'Link'];
+  
+  // Generate share links for each pairing
+  const origin = window.location.origin;
+  const pathname = window.location.pathname.replace(/\/index\.html$/, '');
+  
+  const rows = pairings.map(pairing => {
+    // Create a single pairing for encoding
+    const pairingToShare = [pairing];
+    const encoded = encodePairings(pairingToShare);
+    const shareUrl = `${origin}${pathname}#/shared/${encoded}`;
+    
+    return [
+      sanitizeCSVField(pairing.receiver.name),
+      sanitizeCSVField(shareUrl)
+    ];
+  });
   
   // Combine headers and rows
   const csvContent = [
