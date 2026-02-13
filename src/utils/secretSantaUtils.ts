@@ -119,3 +119,73 @@ export const decodePairings = (encoded: string): Pairing[] | null => {
     return null;
   }
 };
+
+// Sanitize CSV field to prevent injection and handle special characters
+const sanitizeCSVField = (field: string): string => {
+  // First handle escaping and quoting for special CSV characters
+  let needsQuotes = false;
+  
+  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+    needsQuotes = true;
+    // Escape quotes by doubling them
+    field = field.replace(/"/g, '""');
+  }
+  
+  // Then prevent CSV injection by prefixing formulas
+  // This must be done after quote escaping to avoid wrapping the prefix
+  if (/^[=+\-@]/.test(field)) {
+    field = "'" + field;
+  }
+  
+  // Wrap in quotes if needed
+  if (needsQuotes) {
+    field = '"' + field + '"';
+  }
+  
+  return field;
+};
+
+// Export pairings to CSV (without revealing who gives to whom)
+export const exportPairingsToCSV = (pairings: Pairing[]): void => {
+  // Create CSV content with receiver names and shareable links
+  // We don't include giver information to keep the secret santa anonymous
+  const headers = ['Recipient', 'Link'];
+  
+  // Generate share links for each pairing
+  const origin = window.location.origin;
+  const pathname = window.location.pathname.replace(/\/index\.html$/, '');
+  
+  const rows = pairings.map(pairing => {
+    // Create a single pairing for encoding
+    const pairingToShare = [pairing];
+    const encoded = encodePairings(pairingToShare);
+    const shareUrl = `${origin}${pathname}#/shared/${encoded}`;
+    
+    return [
+      sanitizeCSVField(pairing.giver.name),
+      sanitizeCSVField(shareUrl)
+    ];
+  });
+  
+  // Combine headers and rows
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+  
+  // Create a Blob and trigger download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `secret-santa-pairings-${new Date().toISOString().slice(0, 10)}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // Clean up the URL object
+  URL.revokeObjectURL(url);
+};
