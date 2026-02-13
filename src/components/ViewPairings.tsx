@@ -53,7 +53,7 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
           <button onClick={onRegeneratePairings}>
             Regenerate Pairings
           </button>
-          <button onClick={handleExportCSV}>
+          <button onClick={handleExportCSV} aria-label="Export recipient list to CSV">
             Export CSV
           </button>
         </div>

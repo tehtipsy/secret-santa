@@ -120,12 +120,27 @@ export const decodePairings = (encoded: string): Pairing[] | null => {
   }
 };
 
+// Sanitize CSV field to prevent injection and handle special characters
+const sanitizeCSVField = (field: string): string => {
+  // Prevent CSV injection by prefixing formulas with single quote
+  if (/^[=+\-@]/.test(field)) {
+    field = "'" + field;
+  }
+  
+  // Escape quotes and wrap in quotes if field contains special characters
+  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+    field = '"' + field.replace(/"/g, '""') + '"';
+  }
+  
+  return field;
+};
+
 // Export pairings to CSV (without revealing who gives to whom)
 export const exportPairingsToCSV = (pairings: Pairing[]): void => {
   // Create CSV content with just the receiver names to maintain secrecy
   // We don't include giver information to keep the secret santa anonymous
   const headers = ['Recipient'];
-  const rows = pairings.map(pairing => [pairing.receiver.name]);
+  const rows = pairings.map(pairing => [sanitizeCSVField(pairing.receiver.name)]);
   
   // Combine headers and rows
   const csvContent = [
