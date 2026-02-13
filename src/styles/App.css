@@ -111,8 +111,9 @@ button:disabled {
   background-image: url('/purim.jpg');
   background-size: cover;
   background-position: top;
-  text-shadow: #440843 2px 2px 2px;
-  -webkit-text-fill-color: #ccc;
+  text-shadow: #000000 2px 2px 4px;
+  -webkit-text-fill-color: #ffffff;
+  color: #ffffff;
   text-align: center;
   padding: 1rem;
   width: 100%;
