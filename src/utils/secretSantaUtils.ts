@@ -162,7 +162,7 @@ export const exportPairingsToCSV = (pairings: Pairing[]): void => {
     const shareUrl = `${origin}${pathname}#/shared/${encoded}`;
     
     return [
-      sanitizeCSVField(pairing.receiver.name),
+      sanitizeCSVField(pairing.giver.name),
       sanitizeCSVField(shareUrl)
     ];
   });
