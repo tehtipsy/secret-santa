@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pairing } from '../models/types';
-import { encodePairings } from '../utils/secretSantaUtils';
+import { encodePairings, exportPairingsToCSV } from '../utils/secretSantaUtils';
 
 interface ViewPairingsProps {
   pairings: Pairing[];
@@ -42,12 +42,19 @@ const ViewPairings: React.FC<ViewPairingsProps> = ({
     setSelectedPairingIndex(selectedPairingIndex === index ? null : index);
   };
 
+  const handleExportCSV = () => {
+    exportPairingsToCSV(pairings);
+  };
+
   return (
     <div className="pairings-container">
       {!readonly && onRegeneratePairings && (
         <div className="actions">
           <button onClick={onRegeneratePairings}>
             Regenerate Pairings
+          </button>
+          <button onClick={handleExportCSV}>
+            Export CSV
           </button>
         </div>
       )}

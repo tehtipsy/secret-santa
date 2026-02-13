@@ -119,3 +119,33 @@ export const decodePairings = (encoded: string): Pairing[] | null => {
     return null;
   }
 };
+
+// Export pairings to CSV (without revealing who gives to whom)
+export const exportPairingsToCSV = (pairings: Pairing[]): void => {
+  // Create CSV content with just the receiver names to maintain secrecy
+  // We don't include giver information to keep the secret santa anonymous
+  const headers = ['Recipient'];
+  const rows = pairings.map(pairing => [pairing.receiver.name]);
+  
+  // Combine headers and rows
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+  
+  // Create a Blob and trigger download
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `secret-santa-pairings-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // Clean up the URL object
+  URL.revokeObjectURL(url);
+};
