@@ -122,14 +122,24 @@ export const decodePairings = (encoded: string): Pairing[] | null => {
 
 // Sanitize CSV field to prevent injection and handle special characters
 const sanitizeCSVField = (field: string): string => {
-  // Prevent CSV injection by prefixing formulas with single quote
+  // First handle escaping and quoting for special CSV characters
+  let needsQuotes = false;
+  
+  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+    needsQuotes = true;
+    // Escape quotes by doubling them
+    field = field.replace(/"/g, '""');
+  }
+  
+  // Then prevent CSV injection by prefixing formulas
+  // This must be done after quote escaping to avoid wrapping the prefix
   if (/^[=+\-@]/.test(field)) {
     field = "'" + field;
   }
   
-  // Escape quotes and wrap in quotes if field contains special characters
-  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-    field = '"' + field.replace(/"/g, '""') + '"';
+  // Wrap in quotes if needed
+  if (needsQuotes) {
+    field = '"' + field + '"';
   }
   
   return field;
@@ -154,7 +164,7 @@ export const exportPairingsToCSV = (pairings: Pairing[]): void => {
   const url = URL.createObjectURL(blob);
   
   link.setAttribute('href', url);
-  link.setAttribute('download', `secret-santa-pairings-${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `secret-santa-pairings-${new Date().toISOString().slice(0, 10)}.csv`);
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);
